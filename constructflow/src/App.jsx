@@ -1,35 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import { db } from "./firebase";
+import { collection, addDoc } from "firebase/firestore";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [inputText, setInputText] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!inputText.trim()) {
+      setMessage("Please enter some text");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await addDoc(collection(db, "submissions"), {
+        text: inputText,
+        timestamp: new Date(),
+        date: new Date().toLocaleDateString(),
+      });
+      setMessage("Data submitted successfully!");
+      setInputText("");
+      setTimeout(() => setMessage(""), 3000);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      setMessage("Error submitting data. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="app-container">
+      <h1>ConstructFlow</h1>
+      <form onSubmit={handleSubmit} className="form-container">
+        <div className="input-group">
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="Enter your text here"
+            disabled={isSubmitting}
+            className="input-field"
+          />
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="submit-button"
+          >
+            {isSubmitting ? "Submitting..." : "Submit"}
+          </button>
+        </div>
+        {message && <p className="message">{message}</p>}
+      </form>
+    </div>
+  );
 }
 
-export default App
+export default App;
