@@ -1,0 +1,55 @@
+import { useLocation } from "react-router-dom";
+import "../styles/Sidebar.css";
+
+function Sidebar({ role }) {
+  const location = useLocation();
+
+  const managerLinks = [
+    { name: "Dashboard", icon: "📊", path: "/dashboard" },
+    { name: "Projects", icon: "📁", path: "/projects" },
+    { name: "Blueprints", icon: "📐", path: "/blueprint" },
+    { name: "Workers", icon: "👥", path: "/workers" },
+    { name: "Reports", icon: "📈", path: "/reports" },
+    { name: "Settings", icon: "⚙️", path: "/settings" },
+  ];
+
+  const workerLinks = [
+    { name: "Dashboard", icon: "📊", path: "/worker/dashboard" },
+    { name: "My Tasks", icon: "✓", path: "/tasks" },
+    { name: "Blueprints", icon: "📐", path: "/blueprint" },
+    { name: "Profile", icon: "👤", path: "/profile" },
+  ];
+
+  const links = role === "manager" ? managerLinks : workerLinks;
+
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-header">
+        <span style={{ fontSize: "24px" }}>🏗️</span>
+        <h2>CONSTRUCTOS</h2>
+      </div>
+
+      <nav className="sidebar-nav">
+        {links.map((link, index) => (
+          <a
+            key={index}
+            href={link.path}
+            className={`nav-link ${location.pathname === link.path ? "active" : ""}`}
+          >
+            <span className="nav-icon">{link.icon}</span>
+            <span className="nav-text">{link.name}</span>
+          </a>
+        ))}
+      </nav>
+
+      <div className="sidebar-footer">
+        <a href="/logout" className="nav-link">
+          <span className="nav-icon">🚪</span>
+          <span className="nav-text">Logout</span>
+        </a>
+      </div>
+    </aside>
+  );
+}
+
+export default Sidebar;

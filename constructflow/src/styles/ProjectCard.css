@@ -1,0 +1,100 @@
+.project-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.project-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.project-card-header h3 {
+  font-size: 16px;
+  color: #1f2937;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.in-progress {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.pending {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.status-badge.completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.project-card-body {
+  margin-bottom: 16px;
+}
+
+.progress-section {
+  margin-bottom: 8px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.progress-info span {
+  color: #6b7280;
+}
+
+.progress-percentage {
+  color: #ff6b35;
+  font-weight: 600;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b35 0%, #ff8c42 100%);
+  transition: width 0.3s ease;
+}
+
+.project-card-footer {
+  display: flex;
+  gap: 8px;
+}
+
+.project-card-footer .btn-secondary {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 13px;
+}

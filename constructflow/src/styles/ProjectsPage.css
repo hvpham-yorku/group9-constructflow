@@ -1,0 +1,53 @@
+.projects-page {
+  padding: 24px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  font-size: 24px;
+  color: #1f2937;
+  font-weight: 600;
+  margin: 0;
+}
+
+.projects-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.filter-btn {
+  padding: 10px 20px;
+  background: white;
+  color: #6b7280;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  border-color: #ff6b35;
+  color: #ff6b35;
+}
+
+.filter-btn.active {
+  background: #ff6b35;
+  color: white;
+  border-color: #ff6b35;
+}
+
+.section h3 {
+  font-size: 18px;
+  color: #1f2937;
+  margin-bottom: 16px;
+  font-weight: 600;
+}

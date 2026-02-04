@@ -1,0 +1,51 @@
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.task-item {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.task-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.task-info {
+  flex: 1;
+}
+
+.task-info h4 {
+  font-size: 16px;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+  font-weight: 600;
+}
+
+.task-due-date {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.task-item .status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.task-item .btn-secondary {
+  padding: 8px 16px;
+  font-size: 13px;
+}

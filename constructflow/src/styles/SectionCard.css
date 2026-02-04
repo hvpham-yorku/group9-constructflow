@@ -1,0 +1,71 @@
+.section-card {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  transition: all 0.2s ease;
+}
+
+.section-card:hover {
+  border-color: #ff6b35;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.section-color-indicator {
+  width: 4px;
+  height: 24px;
+  border-radius: 2px;
+}
+
+.section-header h4 {
+  font-size: 14px;
+  color: #1f2937;
+  margin: 0;
+  font-weight: 600;
+  flex: 1;
+}
+
+.section-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.section-assigned {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.section-body .status-badge {
+  padding: 3px 10px;
+  font-size: 11px;
+}
+
+.section-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.btn-icon:hover {
+  background: #f3f4f6;
+}

@@ -1,0 +1,35 @@
+.blueprint-canvas {
+  width: 100%;
+  height: 100%;
+  background: #f9fafb;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blueprint-placeholder {
+  text-align: center;
+  padding: 40px;
+}
+
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.placeholder-icon {
+  font-size: 64px;
+  opacity: 0.3;
+}
+
+.blueprint-placeholder p {
+  color: #6b7280;
+  margin: 0;
+}
+
+.placeholder-hint {
+  font-size: 14px;
+}

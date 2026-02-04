@@ -1,0 +1,80 @@
+.blueprint-viewer {
+  height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 16px;
+}
+
+.blueprint-toolbar {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.blueprint-toolbar .btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: white;
+  color: #ff6b35;
+  border: 2px solid #ff6b35;
+}
+
+.blueprint-toolbar .btn-secondary:hover {
+  background: #ff6b35;
+  color: white;
+}
+
+.blueprint-toolbar .icon {
+  font-size: 18px;
+}
+
+.blueprint-main {
+  flex: 1;
+  display: flex;
+  gap: 16px;
+  min-height: 0;
+}
+
+.blueprint-canvas-container {
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.blueprint-sidebar {
+  width: 320px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.blueprint-sidebar h3 {
+  font-size: 18px;
+  color: #1f2937;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.sections-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
