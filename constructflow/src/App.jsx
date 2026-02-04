@@ -9,6 +9,9 @@ import ManagerDashboard from "./pages/ManagerDashboard";
 import WorkerDashboard from "./pages/WorkerDashboard";
 import BlueprintViewer from "./pages/BlueprintViewer";
 import ProjectsPage from "./pages/ProjectsPage";
+import WorkersPage from "./pages/WorkersPage";
+import ReportsPage from "./pages/ReportsPage";
+import SettingsPage from "./pages/SettingsPage";
 import "./App.css";
 
 function App() {
@@ -21,6 +24,9 @@ function App() {
           <Route path="/worker/dashboard" element={<WorkerDashboard />} />
           <Route path="/blueprint" element={<BlueprintViewer />} />
           <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/workers" element={<WorkersPage />} />
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </Router>
     </AuthProvider>
