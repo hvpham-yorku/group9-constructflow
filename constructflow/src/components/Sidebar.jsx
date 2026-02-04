@@ -34,8 +34,12 @@ function Sidebar({ role }) {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <span style={{ fontSize: "24px" }}>🏗️</span>
-        <h2>CONSTRUCTOS</h2>
+        <img
+          src="/logo.png"
+          alt="ConstructFlow Logo"
+          className="sidebar-logo"
+        />
+        <h2>CONSTRUCTFLOW</h2>
       </div>
 
       <nav className="sidebar-nav">

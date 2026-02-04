@@ -10,11 +10,16 @@
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import AuthModal from "./AuthModal";
+import NotificationsModal from "./NotificationsModal";
 import "../styles/Header.css";
 
 function Header({ title, role }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const { currentUser, logout } = useAuth();
+
+  // Placeholder notifications - replace with real data later
+  const notifications = [];
 
   const handleUserClick = () => {
     if (currentUser) {
@@ -39,9 +44,14 @@ function Header({ title, role }) {
           <h1>{title}</h1>
         </div>
         <div className="header-right">
-          <button className="icon-btn">
+          <button
+            className="icon-btn"
+            onClick={() => setShowNotifications(true)}
+          >
             <span className="icon">🔔</span>
-            <span className="badge">3</span>
+            {notifications.length > 0 && (
+              <span className="badge">{notifications.length}</span>
+            )}
           </button>
 
           {currentUser ? (
@@ -71,6 +81,11 @@ function Header({ title, role }) {
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
+      />
+      <NotificationsModal
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+        notifications={notifications}
       />
     </>
   );
