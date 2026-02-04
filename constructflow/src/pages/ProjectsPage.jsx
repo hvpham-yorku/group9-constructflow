@@ -1,3 +1,11 @@
+/**
+ * ProjectsPage.jsx
+ *
+ * Comprehensive project management page displaying all projects (active, completed, and pending).
+ * Managers can view project details, filter by status, create new projects, and access individual
+ * project blueprints. Each project card shows completion percentage and current status.
+ */
+
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import ProjectCard from "../components/ProjectCard";

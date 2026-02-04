@@ -1,3 +1,12 @@
+/**
+ * Header.jsx
+ *
+ * Top navigation header component displayed across all pages. Shows the current page title,
+ * notification icon with badge, and user authentication status. When logged out, displays
+ * a user icon that opens the authentication modal. When logged in, shows user avatar with
+ * email and logout option. Integrates with Firebase authentication.
+ */
+
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import AuthModal from "./AuthModal";

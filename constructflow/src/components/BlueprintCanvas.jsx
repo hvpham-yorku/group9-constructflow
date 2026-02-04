@@ -1,3 +1,11 @@
+/**
+ * BlueprintCanvas.jsx
+ *
+ * Canvas component for displaying and interacting with construction blueprints. Currently shows
+ * a placeholder when no blueprint is uploaded. Will be extended to support blueprint image display,
+ * section drawing tools, and interactive highlighting of defined sections.
+ */
+
 import "../styles/BlueprintCanvas.css";
 
 function BlueprintCanvas() {

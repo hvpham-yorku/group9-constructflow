@@ -1,3 +1,12 @@
+/**
+ * AuthModal.jsx
+ *
+ * Modal dialog component for user authentication (sign in/sign up). Provides a form with
+ * email and password fields, validation, and error handling. Switches between sign in and
+ * sign up modes. Integrates with Firebase Authentication for user management. Opens when
+ * unauthenticated users click the user icon in the header.
+ */
+
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import "../styles/AuthModal.css";

@@ -1,3 +1,11 @@
+/**
+ * TaskList.jsx
+ *
+ * Component for displaying a list of tasks assigned to workers. Each task item shows the
+ * section name, current status, due date, and a view button. Used primarily on the Worker
+ * Dashboard to show assigned work items.
+ */
+
 import "../styles/TaskList.css";
 
 function TaskList({ tasks }) {

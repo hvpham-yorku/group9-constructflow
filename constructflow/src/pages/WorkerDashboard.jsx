@@ -1,3 +1,12 @@
+/**
+ * WorkerDashboard.jsx
+ *
+ * Dashboard page specifically designed for construction workers. Shows assigned tasks,
+ * task statuses, completion statistics, and current project information. Workers can
+ * view their pending and in-progress tasks, check due dates, and access blueprints
+ * for their assigned sections.
+ */
+
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import TaskList from "../components/TaskList";

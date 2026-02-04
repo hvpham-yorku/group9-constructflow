@@ -1,3 +1,12 @@
+/**
+ * ManagerDashboard.jsx
+ *
+ * Main dashboard page for project managers. Displays an overview of all active projects,
+ * key statistics (active projects, workers, tasks), and provides quick action buttons
+ * for common tasks like uploading blueprints and managing workers. This is the default
+ * landing page when users first access the application.
+ */
+
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import ProjectCard from "../components/ProjectCard";

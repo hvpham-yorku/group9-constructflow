@@ -1,3 +1,11 @@
+/**
+ * ProjectCard.jsx
+ *
+ * Reusable card component for displaying individual project information. Shows project name,
+ * status badge (In Progress, Pending, Completed), completion percentage with visual progress bar,
+ * and action buttons for viewing details and opening blueprints. Used on Dashboard and Projects pages.
+ */
+
 import "../styles/ProjectCard.css";
 
 function ProjectCard({ project }) {

@@ -1,3 +1,12 @@
+/**
+ * Sidebar.jsx
+ *
+ * Left navigation sidebar component providing main application navigation. Displays the
+ * ConstructOS branding and navigation links appropriate for the user's role (manager or worker).
+ * Highlights the current active page with an orange accent. Fixed to viewport height for
+ * persistent visibility while scrolling page content.
+ */
+
 import { useLocation } from "react-router-dom";
 import "../styles/Sidebar.css";
 

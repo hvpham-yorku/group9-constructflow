@@ -1,3 +1,11 @@
+/**
+ * SectionCard.jsx
+ *
+ * Card component representing a defined section on a blueprint (e.g., Plumbing - Floor 1).
+ * Displays section name, assigned worker, status with color indicator, and action buttons
+ * for editing and deleting sections. Used in the Blueprint Viewer sidebar.
+ */
+
 import "../styles/SectionCard.css";
 
 function SectionCard({ section }) {

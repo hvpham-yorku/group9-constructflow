@@ -1,3 +1,12 @@
+/**
+ * BlueprintViewer.jsx
+ *
+ * Interactive blueprint viewing and editing page. Allows managers to upload construction
+ * blueprints, draw and define sections (plumbing, electrical, HVAC), assign sections to
+ * workers, set due dates, and track completion status. The page includes a canvas for
+ * blueprint display and a sidebar showing all defined sections with their assignments.
+ */
+
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import BlueprintCanvas from "../components/BlueprintCanvas";

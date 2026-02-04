@@ -1,3 +1,12 @@
+/**
+ * SettingsPage.jsx
+ *
+ * Application settings and preferences page. Users can configure account settings,
+ * notification preferences, project defaults, and other system-wide options. Includes
+ * toggles for email notifications, task reminders, and auto-archive features. Also
+ * provides account management options including account deletion.
+ */
+
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import "../styles/Dashboard.css";

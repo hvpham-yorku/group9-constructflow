@@ -16,6 +16,10 @@
   margin: 0;
 }
 
+.page-header .btn-primary {
+  margin-left: auto;
+}
+
 .projects-filters {
   display: flex;
   gap: 12px;

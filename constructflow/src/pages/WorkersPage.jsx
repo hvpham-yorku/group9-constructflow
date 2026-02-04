@@ -1,3 +1,12 @@
+/**
+ * WorkersPage.jsx
+ *
+ * Worker management page for viewing and managing all construction workers in the system.
+ * Displays worker profiles with their roles (electrician, plumber, etc.), current status
+ * (active/on leave), and assigned task counts. Managers can add new workers, view worker
+ * details, and assign tasks from this page.
+ */
+
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import "../styles/Dashboard.css";
