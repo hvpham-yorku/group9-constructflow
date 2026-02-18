@@ -194,6 +194,20 @@ function BlueprintViewer() {
     } catch (err) { alert("Failed to delete blueprint."); }
   };
 
+  // ── Create new (reset) ──────────────────────────────────────────────────
+  const createNewBlueprint = () => {
+    if (isAdmin && isDirty) {
+      if (!window.confirm("You have unsaved changes. Start a new blueprint anyway?")) return;
+    }
+    setBlueprintName("");
+    setBlueprintImage(null);
+    setCurrentBlueprintId(null);
+    setObjects([]);
+    setObjectsInitialized(false);
+    setIsDirty(false);
+    localStorage.removeItem(LS_KEY);
+  };
+
   // ── Image upload (admin only, only when no image yet) ────────────────────
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -404,6 +418,14 @@ function BlueprintViewer() {
                 >
                   <span className="draw-icon connection-icon" />
                   {isDrawingConnection ? "Cancel Connection" : "Draw Connection"}
+                </button>
+
+                <button
+                  className="btn-secondary save-btn"
+                  onClick={createNewBlueprint}
+                  title="Clear current view and start a new blueprint"
+                >
+                  + New
                 </button>
 
                 <button
