@@ -270,28 +270,40 @@ function BlueprintCanvas({
           {/* Finished / in-progress objects */}
           {objects.map((obj) => {
             const isSelected = obj.id === selectedObjectId;
-            const isOwn = obj.isOwn; // worker's own element → yellow
+            // Guard: isOwn is only true when a real uid matches AND obj is actually assigned
+            const isOwn = obj.isOwn === true;
+            const d = pointsToPath(obj.pathPoints);
             return (
-              <path
-                key={obj.id}
-                d={pointsToPath(obj.pathPoints)}
-                className={`blueprint-object ${obj.type}${obj.completed ? " completed" : ""}${isSelected ? " selected" : ""}${isOwn ? " own-element" : ""}`}
-                strokeWidth={isSelected ? 7 : 5}
-                fill="none"
-                style={{
-                  cursor: activeObjectId
-                    ? "crosshair"
-                    : isSelected && !isWorker
-                    ? (dragging ? "grabbing" : "grab")
-                    : "pointer",
-                }}
-                onMouseDown={(e) => !isWorker && handlePathMouseDown(e, obj)}
-                onClick={(e) => {
-                  if (activeObjectId || dragging) return;
-                  e.stopPropagation();
-                  onObjectSelected && onObjectSelected(obj);
-                }}
-              />
+              <g key={obj.id}>
+                {/* Green outline rendered BEHIND the colored path for completed elements */}
+                {obj.completed && d && (
+                  <path
+                    d={d}
+                    className="blueprint-object completed-outline"
+                    strokeWidth={isSelected ? 13 : 8}
+                    fill="none"
+                  />
+                )}
+                <path
+                  d={d}
+                  className={`blueprint-object ${obj.type}${isSelected ? " selected" : ""}${isOwn ? " own-element" : ""}`}
+                  strokeWidth={isSelected ? 7 : 5}
+                  fill="none"
+                  style={{
+                    cursor: activeObjectId
+                      ? "crosshair"
+                      : isSelected && !isWorker
+                      ? (dragging ? "grabbing" : "grab")
+                      : "pointer",
+                  }}
+                  onMouseDown={(e) => !isWorker && handlePathMouseDown(e, obj)}
+                  onClick={(e) => {
+                    if (activeObjectId || dragging) return;
+                    e.stopPropagation();
+                    onObjectSelected && onObjectSelected(obj);
+                  }}
+                />
+              </g>
             );
           })}
 

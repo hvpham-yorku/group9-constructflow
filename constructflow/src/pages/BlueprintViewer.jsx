@@ -6,14 +6,15 @@
  *   Worker — read-only: select blueprint, see elements, mark OWN elements complete
  *
  * Unsaved-changes guard fires on browser close AND React Router navigation (admin only).
+ * Last opened blueprint is remembered in localStorage.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import BlueprintCanvas from "../components/BlueprintCanvas";
-import { MdUpload, MdSave, MdExpandMore } from "react-icons/md";
+import { MdSave, MdExpandMore } from "react-icons/md";
 import { storage, db } from "../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
@@ -22,6 +23,8 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import "../styles/BlueprintViewer.css";
 
+const LS_KEY = "cf_last_blueprint_id";
+
 let _nextId = 1;
 const makeId = () => `obj-${Date.now()}-${_nextId++}`;
 
@@ -29,40 +32,41 @@ function BlueprintViewer() {
   const { userProfile } = useAuth();
   const navigate = useNavigate();
 
-  const isAdmin  = userProfile?.role === "admin";
-  const isWorker = !isAdmin; // plumber or electrician
-  const currentUid = userProfile?.uid || null;
+  const isAdmin   = userProfile?.role === "admin";
+  const isWorker  = !isAdmin;
+  // Guard: only truthy uid counts — null/undefined must never match
+  const currentUid = (userProfile?.uid && userProfile.uid !== "") ? userProfile.uid : null;
 
   // ── Blueprint state ──────────────────────────────────────────────────────
-  const [blueprintName, setBlueprintName]       = useState("");
-  const [blueprintImage, setBlueprintImage]     = useState(null);
+  const [blueprintName, setBlueprintName]           = useState("");
+  const [blueprintImage, setBlueprintImage]         = useState(null);
   const [currentBlueprintId, setCurrentBlueprintId] = useState(null);
-  const [objects, setObjects]                   = useState([]);
-  const [isDirty, setIsDirty]                   = useState(false); // unsaved changes
+  const [objects, setObjects]                       = useState([]);
+  const [isDirty, setIsDirty]                       = useState(false);
 
   // ── Drawing state (admin only) ───────────────────────────────────────────
-  const [activeObjectId, setActiveObjectId]     = useState(null);
-  const [selectedObjectId, setSelectedObjectId] = useState(null);
+  const [activeObjectId, setActiveObjectId]         = useState(null);
+  const [selectedObjectId, setSelectedObjectId]     = useState(null);
 
   // ── UI state ─────────────────────────────────────────────────────────────
   const [loading, setLoading]   = useState(false);
   const [saving, setSaving]     = useState(false);
 
   // ── Data ─────────────────────────────────────────────────────────────────
-  const [workers, setWorkers]                   = useState({ plumbers: [], electricians: [] });
-  const [savedBlueprints, setSavedBlueprints]   = useState([]);
-  const [showDropdown, setShowDropdown]         = useState(false);
+  const [workers, setWorkers]                 = useState({ plumbers: [], electricians: [] });
+  const [savedBlueprints, setSavedBlueprints] = useState([]);
+  const [showDropdown, setShowDropdown]       = useState(false);
+  const dropdownRef                           = useRef(null);
 
-  // ── Mark dirty whenever objects change (admin only) ──────────────────────
-  // We use a ref trick: skip the very first render
+  // ── Dirty tracking ───────────────────────────────────────────────────────
   const [objectsInitialized, setObjectsInitialized] = useState(false);
   useEffect(() => {
     if (!isAdmin) return;
     if (!objectsInitialized) { setObjectsInitialized(true); return; }
     setIsDirty(true);
-  }, [objects]);
+  }, [objects]); // eslint-disable-line
 
-  // ── Unsaved-changes guard: browser close / refresh ───────────────────────
+  // ── Unsaved-changes guard: browser close ─────────────────────────────────
   useEffect(() => {
     if (!isAdmin) return;
     const handler = (e) => {
@@ -74,8 +78,7 @@ function BlueprintViewer() {
     return () => window.removeEventListener("beforeunload", handler);
   }, [isDirty, isAdmin]);
 
-  // ── Unsaved-changes guard: React Router navigation ───────────────────────
-  // We intercept Link clicks by listening to popstate + click on nav links
+  // ── Unsaved-changes guard: React Router nav ──────────────────────────────
   useEffect(() => {
     if (!isAdmin || !isDirty) return;
     const handleClick = (e) => {
@@ -92,6 +95,19 @@ function BlueprintViewer() {
     document.addEventListener("click", handleClick, true);
     return () => document.removeEventListener("click", handleClick, true);
   }, [isDirty, isAdmin, navigate]);
+
+  // ── Close dropdown on outside click ─────────────────────────────────────
+  useEffect(() => {
+    if (!showDropdown) return;
+    const handleOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+    // Use mousedown so it fires before any click handlers
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [showDropdown]);
 
   // ── Fetch workers ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -120,17 +136,23 @@ function BlueprintViewer() {
       const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       list.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
       setSavedBlueprints(list);
-    } catch (err) { console.error("Fetch blueprints:", err); }
+      return list;
+    } catch (err) { console.error("Fetch blueprints:", err); return []; }
   }, []);
 
-  useEffect(() => { fetchBlueprints(); }, [fetchBlueprints]);
+  // ── On mount: fetch blueprints, then restore last opened ─────────────────
+  useEffect(() => {
+    fetchBlueprints().then((list) => {
+      const lastId = localStorage.getItem(LS_KEY);
+      if (lastId) {
+        const bp = list.find((b) => b.id === lastId);
+        if (bp) loadBlueprintData(bp);
+      }
+    });
+  }, []); // eslint-disable-line
 
-  // ── Load blueprint ───────────────────────────────────────────────────────
-  const loadBlueprint = (bp) => {
-    if (isAdmin && isDirty) {
-      if (!window.confirm("You have unsaved changes. Load a different blueprint?")) return;
-    }
-    setShowDropdown(false);
+  // ── Load blueprint (internal, no dirty check) ────────────────────────────
+  const loadBlueprintData = (bp) => {
     setActiveObjectId(null);
     setSelectedObjectId(null);
     setBlueprintName(bp.name || "");
@@ -140,8 +162,18 @@ function BlueprintViewer() {
       id, ...obj, drawing: false,
     }));
     setObjects(objs);
-    setObjectsInitialized(false); // reset dirty tracking
+    setObjectsInitialized(false);
     setIsDirty(false);
+    localStorage.setItem(LS_KEY, bp.id);
+  };
+
+  // ── Load blueprint (from dropdown — with dirty check) ────────────────────
+  const loadBlueprint = (bp) => {
+    if (isAdmin && isDirty) {
+      if (!window.confirm("You have unsaved changes. Load a different blueprint?")) return;
+    }
+    setShowDropdown(false);
+    loadBlueprintData(bp);
   };
 
   // ── Delete blueprint (admin only) ────────────────────────────────────────
@@ -152,13 +184,17 @@ function BlueprintViewer() {
       await deleteDoc(doc(db, "blueprints", id));
       setSavedBlueprints((prev) => prev.filter((b) => b.id !== id));
       if (currentBlueprintId === id) {
-        setCurrentBlueprintId(null); setBlueprintName(""); setBlueprintImage(null); setObjects([]);
+        setCurrentBlueprintId(null);
+        setBlueprintName("");
+        setBlueprintImage(null);
+        setObjects([]);
         setIsDirty(false);
+        localStorage.removeItem(LS_KEY);
       }
     } catch (err) { alert("Failed to delete blueprint."); }
   };
 
-  // ── Image upload (admin only) ────────────────────────────────────────────
+  // ── Image upload (admin only, only when no image yet) ────────────────────
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -200,7 +236,7 @@ function BlueprintViewer() {
     setActiveObjectId(null);
   };
 
-  const handlePathUpdate   = (id, points) =>
+  const handlePathUpdate    = (id, points) =>
     setObjects((prev) => prev.map((o) => o.id === id ? { ...o, pathPoints: points } : o));
 
   const handleFinishDrawing = (id) => {
@@ -209,7 +245,7 @@ function BlueprintViewer() {
   };
 
   const deleteObject = (id) => {
-    if (id === activeObjectId)  setActiveObjectId(null);
+    if (id === activeObjectId)   setActiveObjectId(null);
     if (id === selectedObjectId) setSelectedObjectId(null);
     setObjects((prev) => prev.filter((o) => o.id !== id));
   };
@@ -229,17 +265,18 @@ function BlueprintViewer() {
   };
 
   // ── Mark complete ────────────────────────────────────────────────────────
-  // Admin: any element. Worker: only elements assigned to them.
   const toggleComplete = (id) => {
     const obj = objects.find((o) => o.id === id);
     if (!obj) return;
-    if (isWorker && obj.assignedTo !== currentUid) return; // workers can only touch their own
+    // Workers can only toggle their own assigned elements
+    if (isWorker && (obj.assignedTo !== currentUid || !currentUid)) return;
+    const newCompleted = !obj.completed;
     setObjects((prev) =>
-      prev.map((o) => o.id === id ? { ...o, completed: !o.completed } : o)
+      prev.map((o) => o.id === id ? { ...o, completed: newCompleted } : o)
     );
-    // For workers, persist immediately to Firestore
+    // Workers persist immediately; admins persist on Save
     if (isWorker && currentBlueprintId) {
-      persistCompletion(id, !obj.completed);
+      persistCompletion(id, newCompleted);
     }
   };
 
@@ -250,7 +287,6 @@ function BlueprintViewer() {
       const updatedObjects = { ...bp.objects };
       if (updatedObjects[objId]) updatedObjects[objId] = { ...updatedObjects[objId], completed };
       await updateDoc(doc(db, "blueprints", currentBlueprintId), { objects: updatedObjects });
-      // Refresh local list
       setSavedBlueprints((prev) =>
         prev.map((b) => b.id === currentBlueprintId ? { ...b, objects: updatedObjects } : b)
       );
@@ -274,13 +310,21 @@ function BlueprintViewer() {
           completed: obj.completed,
         };
       });
-      const data = { name: blueprintName.trim(), imageUrl: blueprintImage, objects: objectsMap, updatedAt: new Date() };
+      const data = {
+        name: blueprintName.trim(),
+        imageUrl: blueprintImage,
+        objects: objectsMap,
+        updatedAt: new Date(),
+      };
+      let savedId = currentBlueprintId;
       if (currentBlueprintId) {
         await updateDoc(doc(db, "blueprints", currentBlueprintId), data);
       } else {
         const docRef = await addDoc(collection(db, "blueprints"), { ...data, createdAt: new Date() });
-        setCurrentBlueprintId(docRef.id);
+        savedId = docRef.id;
+        setCurrentBlueprintId(savedId);
       }
+      localStorage.setItem(LS_KEY, savedId);
       await fetchBlueprints();
       setIsDirty(false);
       alert("Blueprint saved!");
@@ -293,10 +337,11 @@ function BlueprintViewer() {
   const isDrawingPipe       = activeObjectId && objects.find((o) => o.id === activeObjectId)?.type === "pipe";
   const isDrawingConnection = activeObjectId && objects.find((o) => o.id === activeObjectId)?.type === "connection";
 
-  // For canvas: pass currentUid so it can color worker's own elements yellow
+  // Annotate objects with isOwn — only when currentUid is a real value
   const canvasObjects = objects.map((obj) => ({
     ...obj,
-    isOwn: isWorker && obj.assignedTo === currentUid,
+    // isOwn: true only if worker is logged in AND this element is assigned to them
+    isOwn: isWorker && currentUid !== null && obj.assignedTo === currentUid,
   }));
 
   return (
@@ -309,7 +354,7 @@ function BlueprintViewer() {
           {/* ── Toolbar ── */}
           <div className="blueprint-toolbar">
 
-            {/* Blueprint name — editable for admin, readonly for worker */}
+            {/* Blueprint name */}
             <input
               type="text"
               placeholder="Blueprint Name"
@@ -322,11 +367,26 @@ function BlueprintViewer() {
             {/* Admin-only controls */}
             {isAdmin && (
               <>
-                <label className={`btn-secondary${loading ? " disabled" : ""}`}>
-                  <MdUpload className="icon" /> Upload Image
-                  <input type="file" accept="image/*" onChange={handleImageUpload}
-                    style={{ display: "none" }} disabled={loading} />
-                </label>
+                {/* Upload button — only shown when NO image is set yet */}
+                {!blueprintImage && (
+                  <label className={`btn-secondary${loading ? " disabled" : ""}`}>
+                    {loading ? "Uploading…" : "⬆ Upload Image"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      style={{ display: "none" }}
+                      disabled={loading}
+                    />
+                  </label>
+                )}
+
+                {/* Once image is set, show a small indicator instead */}
+                {blueprintImage && (
+                  <span className="image-set-badge" title="Image uploaded. Delete blueprint to change.">
+                    🖼 Image set
+                  </span>
+                )}
 
                 <button
                   className={`btn-secondary draw-btn pipe-btn${isDrawingPipe ? " active" : ""}`}
@@ -359,13 +419,15 @@ function BlueprintViewer() {
             )}
 
             {/* Blueprint selector — both roles */}
-            <div className="blueprint-selector">
+            <div className="blueprint-selector" ref={dropdownRef}>
               <button
                 className="btn-secondary selector-btn"
                 onClick={() => setShowDropdown((v) => !v)}
               >
                 <MdExpandMore className="icon" />
-                {savedBlueprints.length > 0 ? "Blueprints" : "No blueprints"}
+                {currentBlueprintId
+                  ? (savedBlueprints.find((b) => b.id === currentBlueprintId)?.name || "Blueprints")
+                  : savedBlueprints.length > 0 ? "Select Blueprint" : "No blueprints"}
               </button>
 
               {showDropdown && (
@@ -385,8 +447,11 @@ function BlueprintViewer() {
                         {Object.keys(bp.objects || {}).length} elements
                       </span>
                       {isAdmin && (
-                        <button className="dropdown-delete"
-                          onClick={(e) => deleteBlueprint(bp.id, e)} title="Delete">✕</button>
+                        <button
+                          className="dropdown-delete"
+                          onClick={(e) => deleteBlueprint(bp.id, e)}
+                          title="Delete blueprint"
+                        >✕</button>
                       )}
                     </div>
                   ))}
@@ -402,7 +467,7 @@ function BlueprintViewer() {
 
             {isWorker && blueprintImage && (
               <div className="worker-hint">
-                🟡 Yellow = assigned to you &nbsp;·&nbsp; Click an element to mark complete
+                🟡 Yellow = assigned to you &nbsp;·&nbsp; Click "Mark Done" to complete
               </div>
             )}
           </div>
@@ -420,7 +485,6 @@ function BlueprintViewer() {
                 onObjectSelected={(obj) => {
                   if (!activeObjectId) setSelectedObjectId(obj.id);
                 }}
-                currentUid={currentUid}
                 isWorker={isWorker}
               />
             </div>
@@ -441,7 +505,8 @@ function BlueprintViewer() {
                 )}
 
                 {objects.map((obj) => {
-                  const isOwn = isWorker && obj.assignedTo === currentUid;
+                  // Strict check — null uid must never match
+                  const isOwn = isWorker && currentUid !== null && obj.assignedTo === currentUid;
                   const canComplete = isAdmin || isOwn;
                   return (
                     <div
@@ -451,14 +516,13 @@ function BlueprintViewer() {
                     >
                       <div className="section-header">
                         <div className="section-title">
-                          <span className={`type-dot ${obj.type}${obj.completed ? " completed" : ""}${isOwn ? " own" : ""}`} />
+                          <span className={`type-dot ${obj.type}${isOwn ? " own" : ""}`} />
                           <span className="section-type-label">
                             {obj.type === "pipe" ? "Pipe" : "Connection"}
                             {obj.drawing && <span className="drawing-badge"> ✏️</span>}
                           </span>
                         </div>
                         <div className="section-actions-inline">
-                          {/* Complete toggle */}
                           {canComplete && !obj.drawing && (
                             <button
                               className={`btn-complete${obj.completed ? " done" : ""}`}
@@ -468,13 +532,11 @@ function BlueprintViewer() {
                               {obj.completed ? "✓ Done" : "Mark Done"}
                             </button>
                           )}
-                          {/* Status badge for non-completable */}
                           {!canComplete && (
                             <span className={`section-status${obj.completed ? " completed" : ""}`}>
                               {obj.completed ? "Done" : "Pending"}
                             </span>
                           )}
-                          {/* Delete — admin only */}
                           {isAdmin && (
                             <button
                               className="btn-icon-sm delete-btn"
@@ -532,7 +594,6 @@ function BlueprintViewer() {
                 </div>
               )}
 
-              {/* Worker: show "not assigned to you" message */}
               {isWorker && selectedObject && !selectedObject.drawing && selectedObject.assignedTo !== currentUid && (
                 <div className="assignment-panel readonly">
                   <p className="readonly-hint">This element is not assigned to you.</p>

@@ -78,6 +78,23 @@
   cursor: default;
   border-color: #e5e7eb;
 }
+
+/* Badge shown instead of upload button once image is set */
+.image-set-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #166534;
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+}
 .blueprint-toolbar .btn-secondary.active {
   background: #1e293b;
   color: white;
@@ -455,21 +472,16 @@
 }
 
 /* ═══════════════════════════════════════════════════════
-   GLOBAL: All modal / form overlays — max-height 80vh,
-   scrollable, no scrollbar visible
+   GLOBAL: Modal overlays — max-height 80vh, scrollable,
+   no visible scrollbar. Only the outermost modal-content
+   scrolls; inner forms must NOT have overflow set.
    ═══════════════════════════════════════════════════════ */
-.modal-content,
-.modal-body,
-.auth-form,
-[class*="modal-content"],
-[class*="form-container"] {
+.modal-content {
   max-height: 80vh;
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.modal-content::-webkit-scrollbar,
-.modal-body::-webkit-scrollbar,
-.auth-form::-webkit-scrollbar {
+.modal-content::-webkit-scrollbar {
   display: none;
 }
