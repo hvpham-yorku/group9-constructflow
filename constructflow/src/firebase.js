@@ -3,6 +3,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 
 // Firebase configuration from project console
 const firebaseConfig = {
@@ -22,3 +23,6 @@ export const db = getFirestore(app);
 
 // Firebase Auth for user login and signup
 export const auth = getAuth(app);
+
+// Firebase Storage for storing blueprint images
+export const storage = getStorage(app);

@@ -13,6 +13,8 @@ import "../styles/AuthModal.css";
 
 function AuthModal({ isOpen, onClose }) {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("plumber");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -34,7 +36,7 @@ function AuthModal({ isOpen, onClose }) {
 
     try {
       if (isSignUp) {
-        await signup(email, password);
+        await signup(email, password, name, role);
       } else {
         await login(email, password);
       }
@@ -72,6 +74,34 @@ function AuthModal({ isOpen, onClose }) {
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
+          {isSignUp && (
+            <>
+              <div className="form-group">
+                <label htmlFor="name">Name</label>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Enter your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="role">Role</label>
+                <select
+                  id="role"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="role-select"
+                >
+                  <option value="plumber">Plumber</option>
+                  <option value="electrician">Electrician</option>
+                </select>
+              </div>
+            </>
+          )}
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input

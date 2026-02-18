@@ -18,9 +18,17 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   width: 90%;
   max-width: 440px;
+  max-height: 80vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   padding: 32px;
   position: relative;
   animation: slideUp 0.3s ease;
+}
+
+.modal-content::-webkit-scrollbar {
+  display: none;
 }
 
 .modal-close {
