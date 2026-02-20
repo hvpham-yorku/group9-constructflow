@@ -10,9 +10,30 @@
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import TaskList from "../components/TaskList";
+import SignInGate from "../components/SignInGate";
+import { useAuth } from "../contexts/AuthContext";
 import "../styles/Dashboard.css";
 
 function WorkerDashboard() {
+  const { currentUser } = useAuth();
+
+  if (!currentUser) {
+    return (
+      <div className="dashboard">
+        <Sidebar role="worker" />
+        <div className="dashboard-content">
+          <Header title="Worker Dashboard" role="worker" />
+          <div className="dashboard-main">
+            <SignInGate
+              title="Sign in to view dashboard"
+              message="Task and project details are hidden until you sign in."
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Placeholder data for demonstration
   const tasks = [
     {

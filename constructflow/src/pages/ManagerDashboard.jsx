@@ -10,9 +10,49 @@
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import ProjectCard from "../components/ProjectCard";
+import SignInGate from "../components/SignInGate";
+import { useAuth } from "../contexts/AuthContext";
 import "../styles/Dashboard.css";
 
 function ManagerDashboard() {
+  const { currentUser, userProfile } = useAuth();
+  const isAdmin = userProfile?.role === "admin";
+
+  if (!currentUser) {
+    return (
+      <div className="dashboard">
+        <Sidebar />
+        <div className="dashboard-content">
+          <Header title="Manager Dashboard" role="manager" />
+          <div className="dashboard-main">
+            <SignInGate
+              title="Sign in to view dashboard"
+              message="Project metrics and active project details are hidden until you sign in."
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="dashboard">
+        <Sidebar />
+        <div className="dashboard-content">
+          <Header title="Manager Dashboard" role="manager" />
+          <div className="dashboard-main">
+            <SignInGate
+              title="Admin access required"
+              message="Only admin accounts can view the manager dashboard overview."
+              showSignInButton={false}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Placeholder data for demonstration
   const projects = [
     {

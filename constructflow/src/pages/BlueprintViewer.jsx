@@ -13,6 +13,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
+import SignInGate from "../components/SignInGate";
 import BlueprintCanvas from "../components/BlueprintCanvas";
 import { MdSave, MdExpandMore } from "react-icons/md";
 import { storage, db } from "../firebase";
@@ -29,13 +30,14 @@ let _nextId = 1;
 const makeId = () => `obj-${Date.now()}-${_nextId++}`;
 
 function BlueprintViewer() {
-  const { userProfile } = useAuth();
+  const { currentUser, userProfile } = useAuth();
   const navigate = useNavigate();
 
-  const isAdmin   = userProfile?.role === "admin";
-  const isWorker  = !isAdmin;
+  const isAuthenticated = Boolean(currentUser);
+  const isAdmin   = isAuthenticated && userProfile?.role === "admin";
+  const isWorker  = isAuthenticated && !isAdmin;
   // Guard: only truthy uid counts — null/undefined must never match
-  const currentUid = (userProfile?.uid && userProfile.uid !== "") ? userProfile.uid : null;
+  const currentUid = currentUser?.uid || null;
 
   // ── Blueprint state ──────────────────────────────────────────────────────
   const [blueprintName, setBlueprintName]           = useState("");
@@ -142,6 +144,7 @@ function BlueprintViewer() {
 
   // ── On mount: fetch blueprints, then restore last opened ─────────────────
   useEffect(() => {
+    if (!isAuthenticated) return;
     fetchBlueprints().then((list) => {
       const lastId = localStorage.getItem(LS_KEY);
       if (lastId) {
@@ -149,7 +152,7 @@ function BlueprintViewer() {
         if (bp) loadBlueprintData(bp);
       }
     });
-  }, []); // eslint-disable-line
+  }, [isAuthenticated, fetchBlueprints]);
 
   // ── Load blueprint (internal, no dirty check) ────────────────────────────
   const loadBlueprintData = (bp) => {
@@ -357,6 +360,23 @@ function BlueprintViewer() {
     // isOwn: true only if worker is logged in AND this element is assigned to them
     isOwn: isWorker && currentUid !== null && obj.assignedTo === currentUid,
   }));
+
+  if (!isAuthenticated) {
+    return (
+      <div className="dashboard">
+        <Sidebar />
+        <div className="dashboard-content">
+          <Header title="Blueprint Planner" role="worker" />
+          <div className="dashboard-main">
+            <SignInGate
+              title="Sign in to view blueprints"
+              message="Blueprints and assigned elements are hidden until you sign in."
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard">

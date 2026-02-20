@@ -7,13 +7,21 @@ import {
   Navigate,
 } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { useAuth } from "./contexts/AuthContext";
 import ManagerDashboard from "./pages/ManagerDashboard";
+import WorkerDashboard from "./pages/WorkerDashboard";
 import BlueprintViewer from "./pages/BlueprintViewer";
 import ProjectsPage from "./pages/ProjectsPage";
 import WorkersPage from "./pages/WorkersPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
 import "./App.css";
+
+function DashboardHome() {
+  const { currentUser, userProfile } = useAuth();
+  if (!currentUser) return <ManagerDashboard />;
+  return userProfile?.role === "admin" ? <ManagerDashboard /> : <WorkerDashboard />;
+}
 
 // Root app component with routing
 function App() {
@@ -25,14 +33,14 @@ function App() {
         <Routes>
           <Route path="/"                  element={<Navigate to="/dashboard" replace />} />
           {/* Both admin and workers land on /dashboard */}
-          <Route path="/dashboard"         element={<ManagerDashboard />} />
+          <Route path="/dashboard"         element={<DashboardHome />} />
           <Route path="/blueprint"         element={<BlueprintViewer />} />
           <Route path="/projects"          element={<ProjectsPage />} />
           <Route path="/workers"           element={<WorkersPage />} />
           <Route path="/reports"           element={<ReportsPage />} />
           <Route path="/settings"          element={<SettingsPage />} />
           {/* Legacy worker route redirect */}
-          <Route path="/worker/dashboard"  element={<Navigate to="/dashboard" replace />} />
+          <Route path="/worker/dashboard"  element={<WorkerDashboard />} />
         </Routes>
       </Router>
     </AuthProvider>
