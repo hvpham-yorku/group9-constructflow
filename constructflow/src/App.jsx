@@ -1,3 +1,5 @@
+// Main app component - sets up routing and authentication context
+// All pages are protected by the authentication provider
 import {
   BrowserRouter as Router,
   Routes,
@@ -14,7 +16,10 @@ import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
 import "./App.css";
 
+// Root app component with routing
 function App() {
+  // Wrap entire app with auth context and router
+  // Uses role-based routing to show different dashboards for managers vs workers
   return (
     <AuthProvider>
       <Router>

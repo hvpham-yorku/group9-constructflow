@@ -14,10 +14,10 @@ const firebaseConfig = {
   appId: "1:986748380076:web:3797343990a73b16361009",
 };
 
-// Initialize Firebase app with config
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Firestore database for storing projects, tasks, and worker data
+// Initialize Firestore
 export const db = getFirestore(app);
 
 // Firebase Auth for user login and signup

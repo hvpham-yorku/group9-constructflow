@@ -1,8 +1,7 @@
 /**
  * LoginPage.jsx
  *
- * Landing page for user authentication. Displays the ConstructFlow branding and provides
- * a simple login form with email and password fields. Users enter their credentials to access
+ * provides a simple login form with email and password fields. Users enter their credentials to access
  * their role-specific dashboards. Password recovery link is included for forgotten passwords.
  */
 
