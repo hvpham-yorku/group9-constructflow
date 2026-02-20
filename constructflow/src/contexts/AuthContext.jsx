@@ -7,7 +7,8 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { auth } from "../firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
 
 const AuthContext = createContext();
 
@@ -19,9 +20,9 @@ export function useAuth() {
 // Auth provider component - wraps entire app to handle authentication
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null); // Firestore user doc
   const [loading, setLoading] = useState(true);
 
-  // Create new user account with email and password
   async function signup(email, password) {
     return createUserWithEmailAndPassword(auth, email, password);
   }
@@ -38,17 +39,27 @@ export function AuthProvider({ children }) {
 
   // Listen for auth state changes (when user logs in/out) so app can update
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
+      if (user) {
+        try {
+          const snap = await getDoc(doc(db, "users", user.uid));
+          setUserProfile(snap.exists() ? snap.data() : null);
+        } catch {
+          setUserProfile(null);
+        }
+      } else {
+        setUserProfile(null);
+      }
       setLoading(false);
     });
-
     return unsubscribe;
   }, []);
 
   // Expose auth functions and current user to all child components
   const value = {
     currentUser,
+    userProfile,   // has .role, .name, etc.
     signup,
     login,
     logout,

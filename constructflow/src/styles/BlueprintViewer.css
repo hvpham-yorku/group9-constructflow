@@ -4,36 +4,232 @@
   flex-direction: column;
   padding: 24px;
   gap: 16px;
+  overflow: hidden;
 }
 
+/* ── Toolbar ── */
 .blueprint-toolbar {
   display: flex;
-  gap: 12px;
-  padding: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 16px;
   background: white;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  position: relative;
 }
+
+.blueprint-name-input {
+  padding: 8px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  min-width: 160px;
+  transition: border-color 0.2s;
+}
+.blueprint-name-input:focus { border-color: #ff6b35; }
 
 .blueprint-toolbar .btn-secondary {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: 7px;
+  padding: 8px 14px;
   background: white;
-  color: #ff6b35;
-  border: 2px solid #ff6b35;
+  color: #374151;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.blueprint-toolbar .btn-secondary:hover:not(:disabled) {
+  border-color: #9ca3af;
+  background: #f9fafb;
+}
+.blueprint-toolbar .btn-secondary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
-.blueprint-toolbar .btn-secondary:hover {
-  background: #ff6b35;
+/* Save button with unsaved indicator */
+.save-btn.dirty {
+  border-color: #f59e0b !important;
+  color: #f59e0b !important;
+}
+.dirty-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f59e0b;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* Readonly name input for workers */
+.blueprint-name-input.readonly {
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: default;
+  border-color: #e5e7eb;
+}
+
+/* Badge shown instead of upload button once image is set */
+.image-set-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #166534;
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+}
+.blueprint-toolbar .btn-secondary.active {
+  background: #1e293b;
   color: white;
+  border-color: #1e293b;
+}
+.blueprint-toolbar .icon { font-size: 17px; }
+
+/* Draw buttons */
+.pipe-btn        { border-color: #dc2626 !important; color: #dc2626 !important; }
+.pipe-btn:hover:not(:disabled)  { background: #fef2f2 !important; }
+.pipe-btn.active { background: #dc2626 !important; color: white !important; }
+
+.connection-btn       { border-color: #2563eb !important; color: #2563eb !important; }
+.connection-btn:hover:not(:disabled) { background: #eff6ff !important; }
+.connection-btn.active { background: #2563eb !important; color: white !important; }
+
+.draw-icon {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.pipe-icon       { background: #dc2626; }
+.connection-icon { background: #2563eb; }
+
+/* Worker hint bar */
+.worker-hint {
+  font-size: 12px;
+  color: #1e40af;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  padding: 5px 11px;
+  margin-left: auto;
 }
 
-.blueprint-toolbar .icon {
-  font-size: 18px;
+/* Drawing hint */
+.drawing-hint {
+  font-size: 12px;
+  color: #92400e;
+  background: #fef9c3;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+  padding: 5px 11px;
+  margin-left: auto;
 }
 
+/* ── Blueprint selector dropdown ── */
+.blueprint-selector {
+  position: relative;
+}
+
+.selector-btn {
+  gap: 5px;
+}
+
+.blueprint-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 280px;
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: none;           /* Firefox */
+  -ms-overflow-style: none;        /* IE */
+  background: white;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 200;
+}
+.blueprint-dropdown::-webkit-scrollbar { display: none; }
+
+.dropdown-header {
+  padding: 10px 14px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.dropdown-empty {
+  padding: 16px 14px;
+  font-size: 13px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.12s;
+  border-bottom: 1px solid #f9fafb;
+}
+.dropdown-item:last-child { border-bottom: none; }
+.dropdown-item:hover { background: #f9fafb; }
+.dropdown-item.current { background: #fff7f4; }
+
+.dropdown-item-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown-item-count {
+  font-size: 11px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.dropdown-delete {
+  background: none;
+  border: none;
+  color: #d1d5db;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+.dropdown-delete:hover { color: #dc2626; background: #fef2f2; }
+
+/* ── Main layout ── */
 .blueprint-main {
   flex: 1;
   display: flex;
@@ -43,38 +239,249 @@
 
 .blueprint-canvas-container {
   flex: 1;
-  background: white;
+  background: #e8edf2;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  min-height: 0;
 }
 
+/* ── Sidebar ── */
 .blueprint-sidebar {
-  width: 320px;
+  width: 290px;
   background: white;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .blueprint-sidebar h3 {
-  font-size: 18px;
-  color: #1f2937;
-  margin-bottom: 16px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 12px 0;
+  flex-shrink: 0;
+}
+
+.element-count {
+  font-weight: 400;
+  color: #9ca3af;
+  font-size: 13px;
 }
 
 .sections-list {
   flex: 1;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.sections-list::-webkit-scrollbar { display: none; }
+
+.no-sections {
+  font-size: 13px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 24px 0;
+  line-height: 1.7;
 }
 
-.full-width {
+/* ── Element cards ── */
+.section-card {
+  padding: 9px 11px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.13s;
+  background: #fafafa;
+  border-left-width: 3px;
+}
+.section-card.pipe        { border-left-color: #dc2626; }
+.section-card.connection  { border-left-color: #2563eb; }
+.section-card.own-element { border-left-color: #eab308; background: #fefce8; }
+
+.section-card:hover { border-color: #9ca3af; background: white; }
+.section-card.active {
+  border-color: #ff6b35;
+  background: #fff7f4;
+  box-shadow: 0 0 0 2px rgba(255,107,53,0.12);
+}
+.section-card.drawing-active {
+  border-style: dashed;
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.type-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.type-dot.pipe                     { background: #dc2626; }
+.type-dot.connection               { background: #2563eb; }
+.type-dot.pipe.completed           { background: #166534; }
+.type-dot.connection.completed     { background: #4ade80; }
+.type-dot.own                      { background: #eab308; }
+
+.section-type-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+.drawing-badge { font-size: 11px; font-weight: 400; }
+
+.section-actions-inline {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.section-status {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: #e5e7eb;
+  color: #6b7280;
+  font-weight: 500;
+}
+.section-status.completed { background: #dcfce7; color: #166534; }
+
+/* Mark Done button */
+.btn-complete {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  border: 1.5px solid #d1d5db;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-complete:hover {
+  border-color: #166534;
+  color: #166534;
+  background: #f0fdf4;
+}
+.btn-complete.done {
+  background: #dcfce7;
+  border-color: #166534;
+  color: #166534;
+}
+
+.assigned-worker.own {
+  color: #92400e;
+  font-weight: 600;
+}
+
+.btn-icon-sm {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #d1d5db;
+  font-size: 11px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: color 0.15s, background 0.15s;
+}
+.btn-icon-sm.delete-btn:hover { color: #dc2626; background: #fef2f2; }
+
+.section-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+.assigned-worker { color: #374151; }
+.unassigned { color: #9ca3af; font-style: italic; }
+.point-count { color: #9ca3af; font-size: 11px; }
+
+/* ── Assignment panel ── */
+.assignment-panel {
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+.assignment-panel h4 {
+  margin: 0 0 9px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+.worker-type-hint {
+  font-weight: 400;
+  color: #9ca3af;
+  font-size: 12px;
+}
+.assignment-panel select {
   width: 100%;
+  padding: 8px 10px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 7px;
+  font-size: 13px;
+  outline: none;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.assignment-panel select:focus {
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 2px rgba(255,107,53,0.15);
+}
+.no-workers-hint {
+  font-size: 12px;
+  color: #ef4444;
+  margin: 6px 0 0;
+}
+
+.assignment-panel.readonly {
+  background: #f9fafb;
+  border-radius: 7px;
+  padding: 10px 12px;
+  border-top: 1px solid #e5e7eb;
+}
+.readonly-hint {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════
+   GLOBAL: Modal overlays — max-height 80vh, scrollable,
+   no visible scrollbar. Only the outermost modal-content
+   scrolls; inner forms must NOT have overflow set.
+   ═══════════════════════════════════════════════════════ */
+.modal-content {
+  max-height: 80vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.modal-content::-webkit-scrollbar {
+  display: none;
 }
